@@ -1,51 +1,55 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [ contact, setContact ] = useState({firstName: "", lastName: ""})
-  const [ contactsData, setContactsData ] = useState([])
+  const GAME_DURATION = 5
+  const [ text, setText ] = useState("")
+  const [ timeRemaining, setTimeRemaining ] = useState(GAME_DURATION)
+  const [ isTimeRunning, setisTimeRunning ] = useState(false)
+  const [ wordCount, setWordCount ] = useState(0)
 
   function handleChange(e){
-    const {name, value} = e.target
-    setContact(prevContact => {
-      return (
-        {
-          ...prevContact,
-          [name]: value
-        }
-      )
-    })
+    setText(e.target.value)
   }
 
-  function handleSubmit(e){
-    e.preventDefault()
-    setContactsData(prevData => [...prevData, contact])
+  function calculateWordCount(text){
+    const wordsArr = text.trim().split(" ")
+    return wordsArr.filter(word => word !== "").length
   }
 
-  const contacts = contactsData.map(contact => <h2 key={contact.firstName}>{contact.firstName} {contact.lastName}</h2>)
+  function endGame(){
+    const numWords = calculateWordCount(text)
+    setWordCount(numWords)
+    setisTimeRunning(false)
+  }
+
+  useEffect(() => {
+    if(timeRemaining > 0 && isTimeRunning) {
+      setTimeout(() => {
+        setTimeRemaining((time) => time - 1 )
+      }, 1000)
+    } else if(timeRemaining === 0){
+      endGame()
+    }
+  }, [timeRemaining, isTimeRunning])
+
+  function startGame(){
+    setText("")
+    setisTimeRunning(true)
+    setTimeRemaining(GAME_DURATION)
+  }
 
   return (
-    <div className="App">
-      <form onSubmit={handleSubmit}>
-        <input
-          placeholder="First Name"
-          name="firstName"
-          value={contact.firstName}
-          onChange={handleChange}
-        />
-        <br/>
-        <input
-          placeholder="Last Name"
-          name="lastName"
-          value={contact.lastName}
-          onChange={handleChange}
-        />
-        <br/>
-        <button>Add Contacts</button>
-        <br/>
-      </form>
-
-      {contacts}
+    <div>
+      <h1>Speed Typing Game</h1>
+      <textarea disabled={!isTimeRunning}
+        name="text"
+        value={text}
+        onChange={handleChange}
+      />
+      <h4> Time Remaining: {timeRemaining}</h4>
+      <button disabled={isTimeRunning} onClick={() => startGame()}>Start</button>
+      <h1>Word Count: {wordCount}</h1>
     </div>
   );
 }
