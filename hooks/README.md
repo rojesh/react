@@ -5,3 +5,11 @@ This folder includes step by step commits that uses react hooks to teach beginne
 
 The final product will be the MVP of speed typing game that uses the learnings of react hooks.
 various
+
+In this directory, you can run:
+
+### `yarn start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
